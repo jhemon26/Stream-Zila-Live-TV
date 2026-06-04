@@ -1,0 +1,38 @@
+name: Refresh Channels
+
+on:
+  schedule:
+    - cron: '0 4 * * *'   # Daily at 04:00 UTC
+  workflow_dispatch:        # Allow manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download latest channels
+        run: |
+          echo "Fetching channels from upstream..."
+          curl -fsSL \
+            "https://raw.githubusercontent.com/SHAJON-404/iptv/refs/heads/main/channels.json" \
+            -o public/channels.json
+          echo "Channel count: $(python3 -c "import json; d=json.load(open('public/channels.json')); print(len(d))")"
+
+      - name: Check for changes
+        id: diff
+        run: |
+          git diff --quiet public/channels.json && echo "changed=false" >> $GITHUB_OUTPUT || echo "changed=true" >> $GITHUB_OUTPUT
+
+      - name: Commit updated channels
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/channels.json
+          git commit -m "chore: refresh channels.json [$(date -u +%Y-%m-%d)]"
+          git push
