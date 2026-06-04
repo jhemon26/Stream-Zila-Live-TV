@@ -1,6 +1,7 @@
 .card {
   display: flex;
   flex-direction: column;
+  width: 100%;                  /* Fill grid cell explicitly */
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -25,15 +26,23 @@
   box-shadow: 0 0 0 1px var(--accent), 0 10px 28px var(--accent-glow);
 }
 
-/* ── Logo area ─────────────────────────────── */
+/* ── Logo area ──────────────────────────── */
+
+/*
+ * padding-bottom: 56.25% = 9/16 = reliable 16:9 aspect ratio.
+ * aspect-ratio property fails when all children are position:absolute
+ * because no content contributes height to the parent. The padding hack
+ * always works regardless of child positioning.
+ */
 .logoArea {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 9;
+  padding-bottom: 56.25%;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
-/* Fallback tile — renders immediately */
+/* Colored fallback — always rendered, instantly visible */
 .fallback {
   position: absolute;
   inset: 0;
@@ -41,18 +50,19 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 5px;
-  transition: opacity 300ms ease;
+  gap: 6px;
+  transition: opacity 250ms ease;
 }
 
 .fallbackInitial {
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 700;
-  color: rgba(255,255,255,0.85);
+  color: rgba(255,255,255,0.9);
   letter-spacing: -0.5px;
+  line-height: 1;
 }
 
-/* Logo image — starts invisible, fades in when loaded */
+/* Logo image — fades in over the fallback once loaded */
 .logo {
   position: absolute;
   inset: 0;
@@ -60,7 +70,7 @@
   height: 100%;
   object-fit: contain;
   padding: 10px;
-  background: var(--bg-elevated);
+  background: var(--bg-elevated);   /* dark bg covers colored fallback */
   opacity: 0;
   transition: opacity 350ms ease;
 }
@@ -96,7 +106,7 @@
   animation: pulse-live 2s infinite;
 }
 
-/* ── Text info ─────────────────────────────── */
+/* ── Text info ──────────────────────────── */
 .info {
   padding: 9px 10px 10px;
   display: flex;

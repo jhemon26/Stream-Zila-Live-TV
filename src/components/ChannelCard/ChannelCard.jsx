@@ -2,9 +2,9 @@ import { useState } from 'react'
 import styles from './ChannelCard.module.css'
 
 const FALLBACK_COLORS = [
-  '#b71c1c','#880e4f','#4a148c','#1a237e',
-  '#0d47a1','#004d40','#1b5e20','#e65100',
-  '#311b92','#006064','#37474f','#4e342e',
+  '#e53935','#d81b60','#8e24aa','#3949ab',
+  '#1976d2','#0097a7','#00897b','#43a047',
+  '#fb8c00','#6d4c41','#546e7a','#7e57c2',
 ]
 
 function getAccentColor(name) {
