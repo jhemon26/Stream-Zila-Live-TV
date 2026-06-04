@@ -8,77 +8,84 @@
   cursor: pointer;
   text-align: left;
   transition:
-    transform 150ms ease,
-    border-color 150ms ease,
-    box-shadow 150ms ease,
-    background 150ms ease;
+    transform 140ms ease,
+    border-color 140ms ease,
+    box-shadow 140ms ease;
   animation: fade-in 200ms ease both;
 }
 
 .card:hover {
-  background: var(--bg-card-hover);
   border-color: var(--border-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 28px rgba(0,0,0,0.45);
 }
 
 .card.active {
   border-color: var(--accent);
-  box-shadow: 0 0 0 1px var(--accent), 0 8px 24px var(--accent-glow);
+  box-shadow: 0 0 0 1px var(--accent), 0 10px 28px var(--accent-glow);
 }
 
-.card.active:hover {
-  transform: translateY(-2px);
-}
-
-.logoWrapper {
+/* ── Logo area ─────────────────────────────── */
+.logoArea {
   position: relative;
   width: 100%;
   aspect-ratio: 16 / 9;
-  background: var(--bg-elevated);
   overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
+/* Fallback tile — renders immediately */
+.fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  transition: opacity 300ms ease;
+}
+
+.fallbackInitial {
+  font-size: 22px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.85);
+  letter-spacing: -0.5px;
+}
+
+/* Logo image — starts invisible, fades in when loaded */
 .logo {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: contain;
-  padding: 12px;
+  padding: 10px;
+  background: var(--bg-elevated);
+  opacity: 0;
+  transition: opacity 350ms ease;
 }
 
-.logoFallback {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.logoVisible {
+  opacity: 1;
 }
 
-.logoInitial {
-  font-size: 32px;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.9);
-  text-shadow: 0 2px 8px rgba(0,0,0,0.3);
-}
-
+/* LIVE pill */
 .livePill {
   position: absolute;
   top: 7px;
   left: 7px;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 4px;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(4px);
+  background: rgba(0,0,0,0.65);
+  backdrop-filter: blur(6px);
   border-radius: 99px;
   padding: 2px 7px 2px 5px;
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.4px;
   color: var(--live);
+  z-index: 1;
 }
 
 .liveDot {
@@ -89,8 +96,9 @@
   animation: pulse-live 2s infinite;
 }
 
+/* ── Text info ─────────────────────────────── */
 .info {
-  padding: 10px 10px 10px;
+  padding: 9px 10px 10px;
   display: flex;
   flex-direction: column;
   gap: 3px;
@@ -110,7 +118,6 @@
 .group {
   font-size: 11px;
   color: var(--text-muted);
-  font-weight: 400;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

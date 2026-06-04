@@ -51,8 +51,37 @@ function getIcon(group) {
   if (!group) return 'tv'
   const key = group.toLowerCase()
   if (CATEGORY_ICON_MAP[key]) return CATEGORY_ICON_MAP[key]
-  // Countries and regions use flag icon
   return 'flag'
+}
+
+function fuzzyScore(name, group, query) {
+  const haystack = `${name} ${group}`.toLowerCase()
+  const q = query.toLowerCase().trim()
+  if (!q) return 100
+
+  // Exact substring — highest priority
+  if (haystack.includes(q)) return 100
+
+  // Name starts with query
+  if (name.toLowerCase().startsWith(q)) return 90
+
+  // All space-separated words appear somewhere
+  const words = q.split(/\s+/)
+  if (words.length > 1 && words.every(w => haystack.includes(w))) return 80
+
+  // Subsequence: query characters appear in order
+  let qi = 0
+  for (let i = 0; i < haystack.length && qi < q.length; i++) {
+    if (haystack[i] === q[qi]) qi++
+  }
+  if (qi === q.length) return 60
+
+  // High character match ratio (handles minor typos)
+  const uniq = [...new Set(q.split(''))].filter(c => c !== ' ')
+  const matched = uniq.filter(c => haystack.includes(c)).length
+  if (matched / uniq.length >= 0.75) return 30
+
+  return 0
 }
 
 export default function App() {
@@ -88,14 +117,20 @@ export default function App() {
     if (activeCategory !== 'all') {
       result = result.filter(ch => ch.group === activeCategory)
     }
+
     if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase()
-      result = result.filter(ch =>
-        ch.name?.toLowerCase().includes(q) ||
-        ch.group?.toLowerCase().includes(q)
-      )
+      const scored = result
+        .map(ch => ({
+          ch,
+          score: fuzzyScore(ch.name || '', ch.group || '', searchQuery),
+        }))
+        .filter(({ score }) => score > 0)
+        .sort((a, b) => b.score - a.score || (a.ch.name || '').localeCompare(b.ch.name || ''))
+      return scored.map(({ ch }) => ch)
     }
-    return result
+
+    // Default: A-Z alphabetical
+    return [...result].sort((a, b) => (a.name || '').localeCompare(b.name || ''))
   }, [channels, activeCategory, searchQuery])
 
   const handleSelectCategory = (id) => {
